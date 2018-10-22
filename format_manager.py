@@ -19,7 +19,28 @@ from pdfminer.layout import  LAParams
 from pdfminer.pdfpage import  PDFPage
 from io import StringIO
 
-#한글 없음
+# image change modules
+from PIL import Image      # pip install pillow
+from pytesseract import *  # pip install pytesseract
+
+
+def image_change_format(path, lang='eng+kor'):  # path = 파일경로, lang = 적용언어(영어+한글)
+    im = Image.open(path)  # path image open
+    try:
+        text = image_to_string(im, lang=lang, config='--psm 1 -c preserve_interword_spaces=1')
+        # image -> string 변환(대상 이미지, 변환 언어, 변환 룰 설정(글자간 거리 등 *건드리지 말 것*))
+
+    except:  # 변환되는 텍스트가 없을 경우 예외처리
+        print('{} won\'t allow text extraction!'.format(path))
+        text = ""
+    return text
+
+
+
+
+
+
+# 한글없음
 
 
 
@@ -88,23 +109,26 @@ def pptx_change_format(path):
 
 
 def pdf_change_format(path):
-    #path = 'C:/Users/kitri/Desktop/test.pdf'
 
-    rsrcmgr = PDFResourceManager() ; retstr = StringIO() ; codec = 'utf-8'
-    laparams = LAParams() ;device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
+    rsrcmgr = PDFResourceManager(); retstr = StringIO(); codec = 'utf-8'
+    laparams = LAParams(); device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
+
     fp = open(path, 'rb')
     interpreter = PDFPageInterpreter(rsrcmgr, device)
-    maxpages = 0 ; caching = True ;pagenos=set()
+    maxpages = 0; caching = True; pagenos=set()
 
     try:
         for page in PDFPage.get_pages(fp, pagenos, maxpages=maxpages, caching=caching, check_extractable=True):
             interpreter.process_page(page)
-    except:
-        print('This pdf won\'t allow text extraction!')
+    except:  # 추출되는 텍스트 없을 경우 예외처리
+        print('{} won\'t allow text extraction!'.format(path))
+
+    # for page in PDFPage.get_pages(fp, pagenos, maxpages=maxpages,caching=caching, check_extractable=True):
+    # interpreter.process_page(page)
 
     text = retstr.getvalue()
 
-    fp.close();device.close();retstr.close()
+    fp.close(); device.close(); retstr.close()
 
     return text
 

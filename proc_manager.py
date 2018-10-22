@@ -63,6 +63,45 @@ def is_running(process_name):
 
     return flag
 
+#
+
+
+# 제외할 파일 패스 를 주면 현재 돌아가는것중에 제외할 파일패스로 킨 pid를 줘야함
+def path_to_pid(pname,ignore_path_list):
+
+    tmp_str = str()
+    output_process_list = list()
+    filter = pname + '.exe'
+    current_process_path_list = list()
+
+
+    p = wmi.WMI()
+
+    for process in p.Win32_Process():
+        if process.CommandLine is not None:
+            tmp_str += '\n' + process.CommandLine
+
+        ##
+        need_filter_list = tmp_str.splitlines()
+
+        matching = [s for s in need_filter_list if filter.lower() in s.lower()]
+
+        for lines in matching:
+            current_process_path_list.append(set_filter(lines))
+
+        ###
+        for cp_path in current_process_path_list:
+            for ig_path in ignore_path_list:
+                if cp_path[1] == ig_path:
+                    output_process_list.append(process.ProcessId)
+
+    return output_process_list
+
+
+
+##
+
+
 def path_print(path_list):
     outlist = list()
     # 해당되는 프로세스 여러개일때
