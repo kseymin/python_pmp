@@ -1,9 +1,16 @@
 import sys
-from PyQt5 import QtGui, QtWidgets
-from mainLayout import *
-#from secondLayout import *
-from PyQt5.QtWidgets import QInputDialog, QLineEdit
+from PyQt5 import  QtGui, QtWidgets
+import gui.mainLayout as mainLayout
+from PyQt5.QtWidgets import  QInputDialog, QLineEdit
 from PyQt5 import QtTest
+
+
+
+
+import main_operator as mo
+import proc_manager as pm
+
+
 
 class secondWindow(QtWidgets.QDialog):  #  두번째 윈도우 창 (기능 제한 설정 창)
 
@@ -29,7 +36,7 @@ class pmpLayout(QtWidgets.QMainWindow):
 
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
-        self.ui = Ui_PMP()
+        self.ui = mainLayout.Ui_PMP()
         self.ui.setupUi(self)
 
         """UI 각종 이벤트(버튼클릭 등)와 함수를 연결"""
@@ -91,14 +98,45 @@ class pmpLayout(QtWidgets.QMainWindow):
         self.ui.pushButtonSearchWhole.setEnabled(False)  # 검색버튼 비활성화
         self.ui.pushButtonSearchRT.setEnabled(False)
 
-        i = 0
-        while i < 100:
-            self.ui.textBrowserSearch.append('리얼타임검색합니다. %d' % i)
-            i = i + 1
-            QtTest.QTest.qWait(100)  #  딜레이 속도 설정
 
-            if self.stop is True:
-                break
+        # self.ui.textBrowserSearch.append
+        # #스탑
+        # self.stop
+        #
+
+        # i = 0
+        # while i < 100:
+        #     self.ui.textBrowserSearch.append('리얼타임검색합니다. %d' % i)
+        #     i = i + 1
+        #     QtTest.QTest.qWait(100)  #  딜레이 속도 설정
+        #
+        #     if self.stop is True:
+        #         break
+
+        pname = 'POWERPNT'  # pname = [notepad, winword, POWERPNT, excel, AcroRd32]
+        stopbutton_flag = self.stop
+
+
+        ignore_list = list()
+
+        while not stopbutton_flag:
+
+            mo.realtime_processing(pname)
+
+            for ignore in ignore_list:
+                if ignore not in pm.get_proc_pid_list(pname):
+                    ignore_list.remove(ignore)
+            print(ignore_list)
+
+
+
+
+
+
+
+
+
+
 
     def pushButtonStop_clickedEvent(self):
 
@@ -232,7 +270,12 @@ class pmpLayout(QtWidgets.QMainWindow):
                     else:
                         continue
 
-            elif ok and text == '':  # 사용자가 text(규칙)에 값을 안 넣었을 때
+                if ruleDuplicateFlag == 0:
+                    listWidgetRuleNo.insertItem(row, text)  #  왼쪽 규칙 리스트에서 현재 클릭된 아이템의 행 바로 위에 입력한 text를 추가함 (아이템을 클릭하지 않았다면 기본 값은 맨 위)
+                    print("해당 규칙은 중복되지 않습니다.")
+                    print("추가완료")
+
+            elif ok and text == '':  # 사용자가 text(규칙)에 값을 안 넣었을 때 오류 메세지박스 띄움
                 plzInputRule = QtWidgets.QMessageBox(self)
                 plzInputRule.setWindowTitle("규칙 입력 오류")
                 plzInputRule.setIcon(QtWidgets.QMessageBox.Warning)
@@ -240,11 +283,6 @@ class pmpLayout(QtWidgets.QMainWindow):
                 plzInputRule.exec_()
 
                 return
-
-                if ruleDuplicateFlag == 0:
-                    listWidgetRuleNo.insertItem(row, text)  #  왼쪽 규칙 리스트에서 현재 클릭된 아이템의 행 바로 위에 입력한 text를 추가함 (아이템을 클릭하지 않았다면 기본 값은 맨 위)
-                    print("해당 규칙은 중복되지 않습니다.")
-                    print("추가완료")
 
         elif countListWidgetRuleOk is None:  #  오른쪽 리스트에 아이템이 하나도 없을 때 -아이템이 왼쪽 리스트로 전부 다 이동했을 때- 이때는 왼쪽 리스트만 배열에 저장한다
             for index in range(countListWidgetRuleNo):  #  왼쪽 리스트를 count()하여 item의 갯수를 알아내어 반복
@@ -262,7 +300,12 @@ class pmpLayout(QtWidgets.QMainWindow):
                     else:
                         continue
 
-            elif ok and text == '':
+                if ruleDuplicateFlag == 0:
+                    listWidgetRuleNo.insertItem(row, text)  #  왼쪽 규칙 리스트에서 현재 클릭된 아이템의 행 바로 위에 입력한 text를 추가함 (아이템을 클릭하지 않았다면 기본 값은 맨 위)
+                    print("해당 규칙은 중복되지 않습니다.")
+                    print("추가완료")
+
+            elif ok and text == '':  # 사용자가 text(규칙)에 값을 안 넣었을 때 오류 메세지박스 띄움
                 plzInputRule = QtWidgets.QMessageBox(self)
                 plzInputRule.setWindowTitle("규칙 입력 오류")
                 plzInputRule.setIcon(QtWidgets.QMessageBox.Warning)
@@ -270,11 +313,6 @@ class pmpLayout(QtWidgets.QMainWindow):
                 plzInputRule.exec_()
 
                 return
-
-                if ruleDuplicateFlag == 0:
-                    listWidgetRuleNo.insertItem(row, text)  #  왼쪽 규칙 리스트에서 현재 클릭된 아이템의 행 바로 위에 입력한 text를 추가함 (아이템을 클릭하지 않았다면 기본 값은 맨 위)
-                    print("해당 규칙은 중복되지 않습니다.")
-                    print("추가완료")
 
         else:  #  왼쪽, 오른쪽 규칙 리스트에 다 아이템이 있을 때
             for index in range(countListWidgetRuleOk):  #  오른쪽 리스트를 count()하여 item의 갯수를 알아내어 반복
@@ -301,7 +339,12 @@ class pmpLayout(QtWidgets.QMainWindow):
                                 break
                         continue
 
-            elif ok and text == '':
+                if ruleDuplicateFlag == 0:
+                    listWidgetRuleNo.insertItem(row, text)  #  왼쪽 규칙 리스트에서 현재 클릭된 아이템의 행 바로 위에 입력한 text를 추가함 (아이템을 클릭하지 않았다면 기본 값은 맨 위)
+                    print("해당 규칙은 중복되지 않습니다.")
+                    print("추가완료")
+
+            elif ok and text == '':  # 사용자가 text(규칙)에 값을 안 넣었을 때 오류 메세지박스 띄움
                 plzInputRule = QtWidgets.QMessageBox(self)
                 plzInputRule.setWindowTitle("규칙 입력 오류")
                 plzInputRule.setIcon(QtWidgets.QMessageBox.Warning)
@@ -309,11 +352,6 @@ class pmpLayout(QtWidgets.QMainWindow):
                 plzInputRule.exec_()
 
                 return
-
-                if ruleDuplicateFlag == 0:
-                    listWidgetRuleNo.insertItem(row, text)  #  왼쪽 규칙 리스트에서 현재 클릭된 아이템의 행 바로 위에 입력한 text를 추가함 (아이템을 클릭하지 않았다면 기본 값은 맨 위)
-                    print("해당 규칙은 중복되지 않습니다.")
-                    print("추가완료")
 
     def pushButtonDelete_clickedEvent(self):
         row = self.ui.listWidgetRuleNo.currentRow()  # 왼쪽 리스트에서 현재 클릭된 행(currentRow)을 row로 받아옴
@@ -357,7 +395,7 @@ class pmpLayout(QtWidgets.QMainWindow):
 
     """패스워드 입력 함수"""
     def pushButtonPasswd_clickedEvent(self):
-        text, okPressed = QInputDialog.getText(self, "비밀번호 입력", "Pleas Input Password ", QLineEdit.Password, "")
+        text, okPressed = QInputDialog.getText(self, "비밀번호 입력", "Please Input Password ", QLineEdit.Password, "")
         if okPressed and text != '':
             passwd = text
             print("Your password is: " + passwd)

@@ -3,11 +3,14 @@ import signal
 import proc_manager as pm
 import format_manager as fm
 import lock_manager as lm
-from gui import *
+#import gui.passwdLayoutRun as pwd_gui
 
 
 # gui testing..
-# import gui.passwd as gui_pwd
+import gui_password_dialog as gui_pwd
+
+ignore_list = list()
+
 
 def reopen_file(path_list):
     if len(path_list) is not 1:
@@ -46,7 +49,10 @@ def realtime_processing(pname):
 
                     os.kill(pid, signal.SIGTERM)
 
-                    input_password = input('input your password:')
+
+
+                    #input_password = input('input your password:')
+                    input_password= gui_pwd.run()
 
                     if lm.is_key_right(input_password):
                         print('Correct Password')
@@ -65,8 +71,8 @@ def realtime_processing(pname):
                 print(open_need_path)
                 os.kill(pid, signal.SIGTERM)
 
-                input_password = input('input your password:')
-
+                #input_password = input('input your password:')
+                input_password = gui_pwd.run()
                 if lm.is_key_right(input_password):
                     print('Correct Password')
                     reopen_file(open_need_path)
@@ -88,13 +94,30 @@ def realtime_processing(pname):
     else:
         print('no filterd')
 
+    #return open_need_path
 
 
-if __name__ == '__main__':
-    pname = 'POWERPNT'  # pname = [notepad, winword, POWERPNT, excel, AcroRd32]
-    stopbutton_flag = False
+# def run(pname):
+#     #pname = 'POWERPNT'  # pname = [notepad, winword, POWERPNT, excel, AcroRd32]
+#     stopbutton_flag = False
+#
+#
+#     ignore_list = list()
+#
+#     while stopbutton_flag:
+#
+#         realtime_processing(pname)
+#
+#         for ignore in ignore_list:
+#             if ignore not in pm.get_proc_pid_list(pname):
+#                 ignore_list.remove(ignore)
+#         print(ignore_list)
+#
+#
 
-    first_routine = True
+
+def run(pname):
+    pname = pname  # pname = [notepad, winword, POWERPNT, excel, AcroRd32]
 
     ignore_list = list()
 
@@ -102,8 +125,32 @@ if __name__ == '__main__':
 
         realtime_processing(pname)
 
-
         for ignore in ignore_list:
             if ignore not in pm.get_proc_pid_list(pname):
                 ignore_list.remove(ignore)
         print(ignore_list)
+
+
+
+
+
+
+if __name__ == '__main__':
+    pname = 'POWERPNT'  # pname = [notepad, winword, POWERPNT, excel, AcroRd32]
+    run(pname)
+
+    # stopbutton_flag = False
+    #
+    # first_routine = True
+    #
+    # ignore_list = list()
+    #
+    # while True:
+    #
+    #     realtime_processing(pname)
+    #
+    #
+    #     for ignore in ignore_list:
+    #         if ignore not in pm.get_proc_pid_list(pname):
+    #             ignore_list.remove(ignore)
+    #     print(ignore_list)

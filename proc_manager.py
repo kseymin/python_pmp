@@ -7,6 +7,9 @@ return
 '''
 import re
 import wmi
+import pythoncom
+
+
 
 '''
 CommandLine으로 나오는 값이
@@ -48,6 +51,9 @@ def set_filter(split_string ):
 #     return pid_list
 
 def is_running(process_name):
+    pythoncom.CoInitialize()
+
+
     p = wmi.WMI()
     process_name += '.exe'
     process_name.lower()
@@ -61,6 +67,8 @@ def is_running(process_name):
 
 #
 def pid_to_path(pname, pid):
+    pythoncom.CoInitialize()
+
     p = wmi.WMI()
     pname += '.exe'
     pname.lower()
@@ -74,7 +82,7 @@ def pid_to_path(pname, pid):
 
 
 def path_to_pid_input_string(pname,input_string):
-
+    pythoncom.CoInitialize()
     #tmp_str = str()
     output_pid = str()
     filter = pname + '.exe'
@@ -108,6 +116,8 @@ def path_print(path_list):
 
 #  실제 연 파일 path 한번에 리턴
 def get_path(filter):
+    pythoncom.CoInitialize()
+
     p = wmi.WMI ()
     filter =filter + '.exe'
 
@@ -131,6 +141,8 @@ def get_path(filter):
 
 #  실제 연 특정 파일 path 한번에 리턴
 def get_specific_path(pname,pid):
+    pythoncom.CoInitialize()
+
     p = wmi.WMI ()
     filter =pname + '.exe'
 
@@ -152,6 +164,8 @@ def get_specific_path(pname,pid):
 
 
 def get_proc_pid_list(process_name):
+    pythoncom.CoInitialize()
+
     output_pid = list()
 
     if process_name is 'AcroRd32':
