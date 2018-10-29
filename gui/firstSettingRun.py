@@ -1,15 +1,18 @@
 
 import sys
-from firstSetting import *
-from mainLayoutRun6 import *
+#from firstSetting import *
+#from mainLayoutRun6 import *
+import gui.firstSetting as firstSetting
+import gui.mainLayoutRun as guiMain
+
 from PyQt5 import QtCore, QtGui, QtWidgets
-import config2
+import cofig_make.config_manager as cm
 
 class settingLayout(QtWidgets.QMainWindow):
 
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
-        self.ui = Ui_FirstSetting()
+        self.ui = firstSetting.Ui_FirstSetting()
         self.ui.setupUi(self)
 
         """UI 각종 이벤트(버튼클릭 등)와 함수를 연결"""
@@ -32,7 +35,7 @@ class settingLayout(QtWidgets.QMainWindow):
             self.mainWindow = pmpLayout()
             self.mainWindow.show()
 
-            config2.configpasswd2(passwd)
+            cm.configpasswd2(passwd)
             return passwd
 
         elif passwd == '':
@@ -60,7 +63,7 @@ def main():
     elif a == 2:
         # 바로 시작
         app = QtWidgets.QApplication(sys.argv)
-        mainWindow = pmpLayout()
+        mainWindow = guiMain.pmpLayout()
         mainWindow.show()
         sys.exit(app.exec_())
 

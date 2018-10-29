@@ -3,13 +3,26 @@ import signal
 import proc_manager as pm
 import format_manager as fm
 import lock_manager as lm
+
 #import gui.passwdLayoutRun as pwd_gui
+#import cofig_make.config_manager_test as cmt
+import configparser
+
+
 
 
 # gui testing..
 import gui_password_dialog as gui_pwd
 
 ignore_list = list()
+
+
+abspath = os.path.abspath('./cofig_make/config.cfg')
+isabspath = abspath
+
+
+
+
 
 
 def reopen_file(path_list):
@@ -32,10 +45,26 @@ def realtime_processing(pname):
 
     file_text = fm.get_text_to_process(process_name, current_path_list)
 
-    # filtering
+
+
+    # filtering 문제가있음
+    need_filter_list = list()
+    config = configparser.ConfigParser()
+    config.read(isabspath)
+
+    config_len = len(config.options("RKEYWORD"))
+
+    for i in range(0, config_len):
+        need_filter_list.append(config.items("RKEYWORD")[i][1])
+
+    if file_text in need_filter_list:
+        filter_flag = True
+
+
+
 
     # if filter catch
-    filter_flag = True
+    #filter_flag = True
 
     if filter_flag:
         for pid in pm.get_proc_pid_list(process_name):
@@ -132,8 +161,8 @@ def run(pname):
 
 
 if __name__ == '__main__':
-    pname = 'POWERPNT'  # pname = [notepad, winword, POWERPNT, excel, AcroRd32]
-    run(pname)
+    # pname = 'POWERPNT'  # pname = [notepad, winword, POWERPNT, excel, AcroRd32]
+    # run(pname)
 
     # stopbutton_flag = False
     #
@@ -150,3 +179,14 @@ if __name__ == '__main__':
     #         if ignore not in pm.get_proc_pid_list(pname):
     #             ignore_list.remove(ignore)
     #     print(ignore_list)
+
+
+
+    config = configparser.ConfigParser()
+    config.read(path)
+
+    len = len(config.items("RKEYWORD"))
+
+    for i in range(0,len):
+        print(config.items("RKEYWORD")[i][1])
+

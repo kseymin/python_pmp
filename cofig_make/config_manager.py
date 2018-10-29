@@ -1,29 +1,9 @@
 import configparser
-#섹션추가하고 값추가하고 저장하는방법
-"""
-config = configparser.ConfigParser()
+import os
 
-config.add_section("KEYWORD")
+abspath = os.path.abspath('/config.cfg')
+path = abspath
 
-config.set("KEYWORD", "OPTION1", "VALUE")
-"""
-"""
-config.add_section("password")
-
-config.set("password", "OPTION", "VALUE")
-"""
-"""
-configFile = open("C:/Users/kangmin/Desktop/test/config.cfg", "w+")
-
-config.write(configFile)
-
-configFile.close()
-
-config = configparser.ConfigParser()
-
-config.read("config.cfg")
-"""
-path = "C:\\Users\\sku205_25\\PycharmProjects\\Layout_ver3\\config.cfg"
 def configset2(a):#필터링 할검색어 추가하는 함수
 
     config = configparser.ConfigParser()

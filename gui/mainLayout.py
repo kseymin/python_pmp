@@ -7,7 +7,10 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import config2
+import cofig_make.config_manager as cm
+import cofig_make.config_manager_test as cmt
+
+
 class Ui_PMP(object):
     def setupUi(self, PMP):
         PMP.setObjectName("PMP")
@@ -95,9 +98,11 @@ class Ui_PMP(object):
         self.listWidgetRuleNo.setFont(font)
         self.listWidgetRuleNo.setObjectName("listWidgetRuleNo")
 
-        a = config2.configlen()
+        # a = cm.configlen()
 
-        for i in range(0, a):
+        a = cmt.get_left_keyword_len()
+
+        for i in range(0,a):
             item = QtWidgets.QListWidgetItem()
             self.listWidgetRuleNo.addItem(item)
 
@@ -120,9 +125,9 @@ class Ui_PMP(object):
         self.listWidgetRuleOK = QtWidgets.QListWidget(self.ruleTab)
         self.listWidgetRuleOK.setGeometry(QtCore.QRect(303, 30, 221, 261))
 
-        c = config2.rkeywordlen()
-
-        for i in range(0, c):
+        # c = cm.rkeywordlen()
+        c = cmt.get_rigth_keyword_len()
+        for i in range(0,c):
             item = QtWidgets.QListWidgetItem()
             self.listWidgetRuleOK.addItem(item)
 
@@ -248,20 +253,22 @@ class Ui_PMP(object):
         __sortingEnabled = self.listWidgetRuleNo.isSortingEnabled()
         self.listWidgetRuleNo.setSortingEnabled(False)
 
-        a = config2.configlen()
+        # a = cm.configlen()
+        a = cmt.get_left_keyword_len()
 
-        for i in range(0, a):
+        for i in range(0,a):
             item = self.listWidgetRuleNo.item(i)
-            b = config2.openconfig(i)
-
+            # b = cm.openconfig(i)
+            b = cmt.left_configbox_i(i)
             item.setText(_translate("MainWindow", "%s" % b))
 
-        c = config2.rkeywordlen()
+        # c = cm.rkeywordlen()
+        c = cmt.get_rigth_keyword_len()
 
-        for i in range(0, c):
+        for i in range(0,c):
             item = self.listWidgetRuleOK.item(i)
-            d = config2.openconfigright(i)
-
+            # d = cm.openconfigright(i)
+            d = cmt.right_configbox(i)
             item.setText(_translate("MainWindow", "%s" % d))
 
         self.listWidgetRuleNo.setSortingEnabled(__sortingEnabled)
@@ -278,4 +285,3 @@ class Ui_PMP(object):
         self.label_3.setText(_translate("PMP", "<레지스트리 초기화시 본 프로그램을 이용할 수 없습니다>"))
         self.pushButtonChangePassword.setText(_translate("PMP", "Change"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.helpTab), _translate("PMP", "Help"))
-

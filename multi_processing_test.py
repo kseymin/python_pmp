@@ -19,6 +19,7 @@ if __name__ == '__main__':
 
 
     for p in process_list:
+        print(type(p.name))
         print(p.name)
         p.start()
 
