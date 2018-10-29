@@ -49,8 +49,6 @@ def realtime_processing(pname):
 
                     os.kill(pid, signal.SIGTERM)
 
-
-
                     #input_password = input('input your password:')
                     input_password= gui_pwd.run()
 
@@ -80,8 +78,6 @@ def realtime_processing(pname):
                     reopen_pid = pm.path_to_pid_input_string(process_name, open_need_path[0][1])
 
                     print('reopen pid : ', reopen_pid)
-
-
 
                     ignore_list.append(reopen_pid)
 

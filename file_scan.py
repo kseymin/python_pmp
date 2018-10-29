@@ -51,9 +51,9 @@ def file_scanning(dir_path):  # 스캔 시작경로
             else:
                 pass
 
-    print("\n\n==============================Detected files==============================\n\n")
-    for i in detected_list:
-        print(i)
+    # print("\n\n==============================Detected files==============================\n\n")
+    # for i in detected_list:
+    #     print(i)
 
 
-file_scanning("C:/Users/baron/Desktop/TestDir")
+# file_scanning("C:/Users/baron/Desktop/TestDir")
