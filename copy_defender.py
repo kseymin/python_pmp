@@ -66,7 +66,7 @@ def get_filter():  # 필터 가져옴
     return filter_list
 
 
-def clipboard_copy_monitor(test):
+def clipboard_copy_monitor():
 
     while True:
         filter_list = get_filter()

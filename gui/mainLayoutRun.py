@@ -189,9 +189,8 @@ class pmpLayout(QtWidgets.QMainWindow):
 
         #process_list = []
 
-        filter_list = ['test']
 
-        process = Process(target=cd.clipboard_copy_monitor, args=(filter_list,), name='copyDefender')
+        process = Process(target=cd.clipboard_copy_monitor, name='copyDefender')
         process_list.append(process)
         process.start()
 

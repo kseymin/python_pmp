@@ -127,7 +127,7 @@ def pdf_change_format(path):
     return text
 
 def read_txt(path):
-    file = open(path, mode='r',errors='ignore')
+    file = open(path, mode='r', errors='ignore')
 
     lines = file.readlines()
 
@@ -154,7 +154,7 @@ def get_text_to_process(pname, path_list):
                 output_text += ' ' + read_txt(path[1])
         return output_text
 
-    if pname == 'POWERPNT':
+    elif pname == 'POWERPNT':
         if len(path_list) is not 1:
             for i in range(0, len(path_list)):
                 read_path = path_list[i][1]
@@ -164,7 +164,7 @@ def get_text_to_process(pname, path_list):
                 output_text += ' ' + pptx_change_format(path[1])
         return output_text
 
-    if pname == 'AcroRd32':
+    elif pname == 'AcroRd32':
         if len(path_list) is not 1:
             for i in range(0, len(path_list)):
                 read_path = path_list[i][1]
@@ -174,7 +174,7 @@ def get_text_to_process(pname, path_list):
                 output_text += ' ' + pdf_change_format(path[1])
         return output_text
 
-    if pname == 'winword':
+    elif pname == 'winword':
         if len(path_list) is not 1:
             for i in range(0, len(path_list)):
                 read_path = path_list[i][1]
@@ -184,7 +184,7 @@ def get_text_to_process(pname, path_list):
                 output_text += ' ' + word_change_format(path[1])
         return output_text
 
-    if pname == 'excel':
+    elif pname == 'excel':
         if len(path_list) is not 1:
             for i in range(0, len(path_list)):
                 read_path = path_list[i][1]
@@ -194,5 +194,5 @@ def get_text_to_process(pname, path_list):
                 output_text += ' ' + excel_change_format(path[1])
         return output_text
 
-    if pname == 'hwp':
+    elif pname == 'hwp':
         return '준비중'

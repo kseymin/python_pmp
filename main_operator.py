@@ -3,6 +3,7 @@ import signal
 import proc_manager as pm
 import format_manager as fm
 import lock_manager as lm
+import re
 
 #import gui.passwdLayoutRun as pwd_gui
 #import config_make.config_manager_test as cmt
@@ -47,12 +48,10 @@ def realtime_processing(pname):
     print("proc_name : ", process_name)
 
     file_text = fm.get_text_to_process(process_name, current_path_list)
-
     print("file_text : ", file_text)
 
     if file_text is not None:
 
-        # filtering 문제가있음
         need_filter_list = list()
         config = configparser.RawConfigParser()
         config.read(isabspath)
@@ -68,10 +67,18 @@ def realtime_processing(pname):
             for i in data_list:
                 need_filter_list.append(config.get('RKEYWORD', i))
 
-            for filter in need_filter_list:
-                if filter in file_text:
-                    filter_flag = True
-                    break
+            for j in need_filter_list:
+                if j[0] == '\\':  # filter가 정규표현식일 경우
+                    p = re.compile(j)  # 정규표현식 컴파일
+                    m = p.findall(file_text)  # text에서 해당 형식 찾음
+                    if len(m) > 0:
+                        filter_flag = True
+                        break
+
+                else:
+                    if i in file_text:
+                        filter_flag = True
+                        break
 
 
     # if filter catch
@@ -129,6 +136,26 @@ def realtime_processing(pname):
     else:
         print('no filterd')
 
+    #return open_need_path
+
+
+# def run(pname):
+#     #pname = 'POWERPNT'  # pname = [notepad, winword, POWERPNT, excel, AcroRd32]
+#     stopbutton_flag = False
+#
+#
+#     ignore_list = list()
+#
+#     while stopbutton_flag:
+#
+#         realtime_processing(pname)
+#
+#         for ignore in ignore_list:
+#             if ignore not in pm.get_proc_pid_list(pname):
+#                 ignore_list.remove(ignore)
+#         print(ignore_list)
+#
+#
 
 
 def run(pname):
@@ -137,14 +164,15 @@ def run(pname):
     ignore_list = list()
 
     while True:
+        try:
+            realtime_processing(pname)
 
-        realtime_processing(pname)
-
-        for ignore in ignore_list:
-            if ignore not in pm.get_proc_pid_list(pname):
-                ignore_list.remove(ignore)
-        print(ignore_list)
-
+            for ignore in ignore_list:
+                if ignore not in pm.get_proc_pid_list(pname):
+                    ignore_list.remove(ignore)
+            print(ignore_list)
+        except NameError:
+            pass
 
 
 
@@ -169,5 +197,6 @@ if __name__ == '__main__':
             if ignore not in pm.get_proc_pid_list(pname):
                 ignore_list.remove(ignore)
         print(ignore_list)
+
 
 
