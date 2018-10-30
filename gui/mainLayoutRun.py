@@ -191,19 +191,18 @@ class pmpLayout(QtWidgets.QMainWindow):
 
         filter_list = ['test']
 
-        for pname in pname_list:
-            process = Process(target=mo.run,args=(pname,), name=pname)
-            process_list.append(process)
-
         process = Process(target=cd.clipboard_copy_monitor, args=(filter_list,), name='copyDefender')
         process_list.append(process)
+        process.start()
 
-        print(process_list)
+        for pname in pname_list:
+            process = Process(target=mo.run, args=(pname,), name=pname)
+            process_list.append(process)
+            process.start()
 
         for p in process_list:
             output_tmp = 'Real Time process :'+p.name +' is Running..'
             self.ui.textBrowserSearch.append(output_tmp)
-            p.start()
 
     def pushButtonStop_clickedEvent(self):
 

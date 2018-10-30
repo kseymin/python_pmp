@@ -141,10 +141,10 @@ def read_txt(path):
 
 
 # 프로세스 와 프로세스 경로를 주면 텍스트로 변환해서 던져주는 함수
-def get_text_to_process(pname,path_list):
+def get_text_to_process(pname, path_list):
     output_text = str()
 
-    if pname is 'notepad':
+    if pname == 'notepad':
         if len(path_list) is not 1:
             for i in range(0, len(path_list)):
                 read_path = path_list[i][1]
@@ -154,9 +154,7 @@ def get_text_to_process(pname,path_list):
                 output_text += ' ' + read_txt(path[1])
         return output_text
 
-
-
-    if pname is 'POWERPNT':
+    if pname == 'POWERPNT':
         if len(path_list) is not 1:
             for i in range(0, len(path_list)):
                 read_path = path_list[i][1]
@@ -166,8 +164,7 @@ def get_text_to_process(pname,path_list):
                 output_text += ' ' + pptx_change_format(path[1])
         return output_text
 
-
-    if pname is 'AcroRd32':
+    if pname == 'AcroRd32':
         if len(path_list) is not 1:
             for i in range(0, len(path_list)):
                 read_path = path_list[i][1]
@@ -177,7 +174,7 @@ def get_text_to_process(pname,path_list):
                 output_text += ' ' + pdf_change_format(path[1])
         return output_text
 
-    if pname is 'winword':
+    if pname == 'winword':
         if len(path_list) is not 1:
             for i in range(0, len(path_list)):
                 read_path = path_list[i][1]
@@ -187,7 +184,7 @@ def get_text_to_process(pname,path_list):
                 output_text += ' ' + word_change_format(path[1])
         return output_text
 
-    if pname is 'excel':
+    if pname == 'excel':
         if len(path_list) is not 1:
             for i in range(0, len(path_list)):
                 read_path = path_list[i][1]
@@ -196,12 +193,6 @@ def get_text_to_process(pname,path_list):
             for path in path_list:
                 output_text += ' ' + excel_change_format(path[1])
         return output_text
-    if pname is 'hwp':
+
+    if pname == 'hwp':
         return '준비중'
-
-
-
-
-
-
-

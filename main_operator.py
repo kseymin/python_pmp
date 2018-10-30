@@ -43,10 +43,12 @@ def realtime_processing(pname):
     filter_flag = False
 
     current_path_list = pm.get_path(process_name)
-    print("시발새키 current_path  : ",current_path_list)
+    print("current_path  : ", current_path_list)
+    print("proc_name : ", process_name)
 
     file_text = fm.get_text_to_process(process_name, current_path_list)
-    print(file_text)
+
+    print("file_text : ", file_text)
 
     if file_text is not None:
 
@@ -57,7 +59,6 @@ def realtime_processing(pname):
 
         config_len = len(config.options("RKEYWORD"))
         data_list = config.options('RKEYWORD')
-        print(data_list)
 
         if config_len is 0:
             print('먼저 필터링할 키워드를 넣어주세요')
@@ -67,14 +68,10 @@ def realtime_processing(pname):
             for i in data_list:
                 need_filter_list.append(config.get('RKEYWORD', i))
 
-            print(need_filter_list)
-
             for filter in need_filter_list:
                 if filter in file_text:
                     filter_flag = True
                     break
-
-
 
 
     # if filter catch
@@ -132,26 +129,6 @@ def realtime_processing(pname):
     else:
         print('no filterd')
 
-    #return open_need_path
-
-
-# def run(pname):
-#     #pname = 'POWERPNT'  # pname = [notepad, winword, POWERPNT, excel, AcroRd32]
-#     stopbutton_flag = False
-#
-#
-#     ignore_list = list()
-#
-#     while stopbutton_flag:
-#
-#         realtime_processing(pname)
-#
-#         for ignore in ignore_list:
-#             if ignore not in pm.get_proc_pid_list(pname):
-#                 ignore_list.remove(ignore)
-#         print(ignore_list)
-#
-#
 
 
 def run(pname):
@@ -192,6 +169,5 @@ if __name__ == '__main__':
             if ignore not in pm.get_proc_pid_list(pname):
                 ignore_list.remove(ignore)
         print(ignore_list)
-
 
 
