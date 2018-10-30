@@ -1,5 +1,6 @@
 import winreg
 import configparser
+import os
 
 # 레지스트리 경로
 OFFICE_REG_PATH_LIST = [r'Excel.Sheet.12\shell\Open\command', r'Excel.Sheet.8\shell\Open\command',
@@ -7,6 +8,8 @@ OFFICE_REG_PATH_LIST = [r'Excel.Sheet.12\shell\Open\command', r'Excel.Sheet.8\sh
                  r'PowerPoint.Show.12\shell\Open\command', r'PowerPoint.Show.8\shell\Open\command']
 
 ACRORD_REG_PATH = r'AcroExch.Document.DC\shell\Read\command'
+
+abspath = os.path.abspath('../config_make/config.cfg')
 
 
 # 현재 MS Office (Word, Excel, PowerPoint)의 open shell command 레지스트리 데이터 GET
@@ -113,9 +116,9 @@ def regbackup_set(reg_backup_list):  # regbackup변경하는 함수
     data_list = ['Excel.Sheet.12', 'Excel.Sheet.8', 'Word.Document.12', 'Word.Document.8',
                  'PowerPoint.Show.12', 'PowerPoint.Show.8', 'AcroExch.Document.DC']
     for i in range(0, 7):
-        config.read("test.cfg")
-        config.set("regbackup", data_list[i], reg_backup_list[i])
-        configFile = open("test.cfg", "w+")
+        config.read(abspath)
+        config.set("REGBACKUP", data_list[i], reg_backup_list[i])
+        configFile = open(abspath, "w+")
         config.write(configFile)
         configFile.close()
 
@@ -143,9 +146,9 @@ def reg_restore():  # 백업되어있는 레지스트리 데이터 복원
     data_list = ['Excel.Sheet.12', 'Excel.Sheet.8', 'Word.Document.12', 'Word.Document.8',
                  'PowerPoint.Show.12', 'PowerPoint.Show.8', 'AcroExch.Document.DC']
     reg_backup_data = list()
-    config.read("test.cfg")
+    config.read(abspath)
     for i in range(0, 7):
-        reg_backup_data.append(config.get('regbackup', data_list[i]))
+        reg_backup_data.append(config.get('REGBACKUP', data_list[i]))
 
     for i in reg_backup_data:
         print(i)

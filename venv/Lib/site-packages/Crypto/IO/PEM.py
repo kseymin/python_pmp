@@ -33,16 +33,15 @@
 
 __all__ = ['encode', 'decode']
 
-from Crypto.Util.py3compat import b, hexlify, unhexlify, tobytes, tostr
-
 import re
-from binascii import a2b_base64, b2a_base64
+from binascii import a2b_base64, b2a_base64, hexlify, unhexlify
 
 from Crypto.Hash import MD5
 from Crypto.Util.Padding import pad, unpad
 from Crypto.Cipher import DES, DES3, AES
 from Crypto.Protocol.KDF import PBKDF1
 from Crypto.Random import get_random_bytes
+from Crypto.Util.py3compat import b, tobytes, tostr
 
 
 def encode(data, marker, passphrase=None, randfunc=None):
@@ -115,14 +114,14 @@ def decode(pem_data, passphrase=None):
     """
 
     # Verify Pre-Encapsulation Boundary
-    r = re.compile("\s*-----BEGIN (.*)-----\s+")
+    r = re.compile(r"\s*-----BEGIN (.*)-----\s+")
     m = r.match(pem_data)
     if not m:
         raise ValueError("Not a valid PEM pre boundary")
     marker = m.group(1)
 
     # Verify Post-Encapsulation Boundary
-    r = re.compile("-----END (.*)-----\s*$")
+    r = re.compile(r"-----END (.*)-----\s*$")
     m = r.search(pem_data)
     if not m or m.group(1) != marker:
         raise ValueError("Not a valid PEM post boundary")

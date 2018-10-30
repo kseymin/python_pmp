@@ -118,8 +118,8 @@ def path_print(path_list):
 def get_path(filter):
     pythoncom.CoInitialize()
 
-    p = wmi.WMI ()
-    filter =filter + '.exe'
+    p = wmi.WMI()
+    filter = filter + '.exe'
 
     output_tmp = str()
     filtered_output = list()

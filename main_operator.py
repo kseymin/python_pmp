@@ -5,7 +5,7 @@ import format_manager as fm
 import lock_manager as lm
 
 #import gui.passwdLayoutRun as pwd_gui
-#import cofig_make.config_manager_test as cmt
+#import config_make.config_manager_test as cmt
 import configparser
 
 
@@ -17,7 +17,9 @@ import gui_password_dialog as gui_pwd
 ignore_list = list()
 
 
-abspath = os.path.abspath('./cofig_make/config.cfg')
+abspath = os.path.abspath('../config_make/config.cfg')
+#이 코드를 메인으로 쓰려면 아래 경로로(테스트용)
+#abspath = os.path.abspath('./config_make/config.cfg')
 isabspath = abspath
 
 
@@ -38,33 +40,45 @@ def reopen_file(path_list):
 
 def realtime_processing(pname):
     process_name = pname
-    current_path_list = list()
     filter_flag = False
 
     current_path_list = pm.get_path(process_name)
+    print("시발새키 current_path  : ",current_path_list)
 
     file_text = fm.get_text_to_process(process_name, current_path_list)
+    print(file_text)
 
+    if file_text is not None:
 
+        # filtering 문제가있음
+        need_filter_list = list()
+        config = configparser.RawConfigParser()
+        config.read(isabspath)
 
-    # filtering 문제가있음
-    need_filter_list = list()
-    config = configparser.ConfigParser()
-    config.read(isabspath)
+        config_len = len(config.options("RKEYWORD"))
+        data_list = config.options('RKEYWORD')
+        print(data_list)
 
-    config_len = len(config.options("RKEYWORD"))
+        if config_len is 0:
+            print('먼저 필터링할 키워드를 넣어주세요')
+            return print('ERROR: no keyword filtering')
 
-    for i in range(0, config_len):
-        need_filter_list.append(config.items("RKEYWORD")[i][1])
+        else:
+            for i in data_list:
+                need_filter_list.append(config.get('RKEYWORD', i))
 
-    if file_text in need_filter_list:
-        filter_flag = True
+            print(need_filter_list)
+
+            for filter in need_filter_list:
+                if filter in file_text:
+                    filter_flag = True
+                    break
 
 
 
 
     # if filter catch
-    #filter_flag = True
+    # filter_flag = True
 
     if filter_flag:
         for pid in pm.get_proc_pid_list(process_name):
@@ -114,7 +128,6 @@ def realtime_processing(pname):
                     print('not matched password')
 
 
-
     # 필터에 안걸림
     else:
         print('no filterd')
@@ -161,32 +174,24 @@ def run(pname):
 
 
 if __name__ == '__main__':
-    # pname = 'POWERPNT'  # pname = [notepad, winword, POWERPNT, excel, AcroRd32]
-    # run(pname)
+    pname = 'winword'  # pname = [notepad, winword, POWERPNT, excel, AcroRd32]
+    run(pname)
 
-    # stopbutton_flag = False
-    #
-    # first_routine = True
-    #
-    # ignore_list = list()
-    #
-    # while True:
-    #
-    #     realtime_processing(pname)
-    #
-    #
-    #     for ignore in ignore_list:
-    #         if ignore not in pm.get_proc_pid_list(pname):
-    #             ignore_list.remove(ignore)
-    #     print(ignore_list)
+    stopbutton_flag = False
+
+    first_routine = True
+
+    ignore_list = list()
+
+    while True:
+
+        realtime_processing(pname)
 
 
+        for ignore in ignore_list:
+            if ignore not in pm.get_proc_pid_list(pname):
+                ignore_list.remove(ignore)
+        print(ignore_list)
 
-    config = configparser.ConfigParser()
-    config.read(path)
 
-    len = len(config.items("RKEYWORD"))
-
-    for i in range(0,len):
-        print(config.items("RKEYWORD")[i][1])
 

@@ -2,6 +2,8 @@ import win32clipboard  # pywin32
 import time
 import format_manager  # format_manager.py
 import filtering_manager  # filtering_manager.py
+import configparser
+import os
 
 """
 OpenClipboard() 사용시 반드시 CloseClipboard()를 사용해 닫아주어야 한다.
@@ -47,13 +49,28 @@ def file_filtering(filter_list, path):
         text = format_manager.excel_change_format(path)
         check_filtering(filter_list, text, file_name)
 
-    else:
-        print("Skip this file")
+    # else:
+    #     print("Skip this file")
 
 
-def clipboard_copy_monitor(filter_list):
+def get_filter():  # 필터 가져옴
+    abspath = os.path.abspath('../config_make/config.cfg')
+    config = configparser.RawConfigParser()
+    config.read(abspath)
+    data_list = config.options('RKEYWORD')
+    filter_list = list()
+
+    for i in data_list:
+        filter_list.append(config.get('RKEYWORD', i))
+
+    return filter_list
+
+
+def clipboard_copy_monitor(test):
 
     while True:
+        filter_list = get_filter()
+
         try:
             # case: 파일 복사
             win32clipboard.OpenClipboard()
@@ -80,14 +97,7 @@ def clipboard_copy_monitor(filter_list):
             except:
                 # case: 클립보드에 데이터 = NULL
                 win32clipboard.CloseClipboard()
-                print("No data")
+                #print("No data")
 
         time.sleep(1)
         # loop delay(~/sec)
-
-# ======================================================
-filter_list = ['this', 'is', 'test', 'example', '자격증']
-# ===================test example=======================
-
-if __name__ == "__main__":
-    clipboard_copy_monitor(filter_list)

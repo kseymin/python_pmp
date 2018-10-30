@@ -6,19 +6,25 @@ import gui.mainLayout as guiMain
 import gui.firstSettingRun as firstSetting
 
 
-from PyQt5.QtWidgets import  QLineEdit
-from PyQt5 import QtWidgets,QtGui
+from PyQt5.QtWidgets import QLineEdit
+from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QDialog, QInputDialog
 from PyQt5 import QtTest
-import cofig_make.config_manager as cm
+import config_make.config_manager as cm
 
-import cofig_make.config_manager_test as cmt
+import config_make.config_manager_test as cmt
+import lock_manager as lm
 
 # Real Time Search import
 import main_operator as mo
 import copy_defender as cd
 from multiprocessing import Process
 
+# Whole System Search
+import file_scan
+
+# Registry Reset
+import reg_manager
 
 
 process_list = []
@@ -60,7 +66,7 @@ class secondWindow(QtWidgets.QDialog):  # 두번째 윈도우 창 (기능 제한
             키워드 저장
             """
             title =cmt.get_tmp()
-            cmt.add_left(title,content=text)
+            cmt.add_left(title, content=text)
             print("키워드 저장됨")
             self.close()
 
@@ -71,6 +77,7 @@ class secondWindow(QtWidgets.QDialog):  # 두번째 윈도우 창 (기능 제한
             inputError.setText("키워드를 다시 입력하세요")
             inputError.exec_()
             pass
+
 
 class pmpLayout(QtWidgets.QMainWindow):
 
@@ -114,14 +121,7 @@ class pmpLayout(QtWidgets.QMainWindow):
     def pushButtonSearchWhole_clickedEvent(self):  # 전체검색클릭시 실행 함수
 
         path, okPressed = QInputDialog.getText(self, "경로 입력", "Please Input Path ")
-
-        """
-
-
-        경로 
-
-
-        """
+        # C:/Users/baron/Desktop/TestDir
 
         if okPressed is not None and path != '':
             """폰트설정"""
@@ -139,14 +139,13 @@ class pmpLayout(QtWidgets.QMainWindow):
             self.ui.pushButtonSearchWhole.setEnabled(False)  # 검색버튼 비활성화
             self.ui.pushButtonSearchRT.setEnabled(False)
 
-            i = 0
-            while i < 100:
-                self.ui.textBrowserSearch.append('전체검색합니다. %d' % i)
-                i = i + 1
-                QtTest.QTest.qWait(100)  # 딜레이 속도 설정
+            detected_list = file_scan.file_scanning(path)
+            for i in detected_list:
+                self.ui.textBrowserSearch.append("[Detected Files]")
+                self.ui.textBrowserSearch.append(i)
 
-                if self.stop is True:
-                    break
+            # if self.stop is True:
+            #     break
 
         elif okPressed and path == '':
 
@@ -193,11 +192,13 @@ class pmpLayout(QtWidgets.QMainWindow):
         filter_list = ['test']
 
         for pname in pname_list:
-            process = Process(target=mo.run, args=(pname,), name=pname)
+            process = Process(target=mo.run,args=(pname,), name=pname)
             process_list.append(process)
 
         process = Process(target=cd.clipboard_copy_monitor, args=(filter_list,), name='copyDefender')
         process_list.append(process)
+
+        print(process_list)
 
         for p in process_list:
             output_tmp = 'Real Time process :'+p.name +' is Running..'
@@ -257,8 +258,8 @@ class pmpLayout(QtWidgets.QMainWindow):
                 """오른쪽 리스트의 아이템 개수가 0일때는 그냥 추가 진행"""
 
                 listWidgetRuleOk.addItem(str(item.text()))
-                #config2.configright(item.text())
-                #cmt.input_right_table(item.text())
+                # config2.configright(item.text())
+                cmt.input_right_table(item.text())
                 item = listWidgetRuleNo.takeItem(row)
                 del item
 
@@ -289,9 +290,10 @@ class pmpLayout(QtWidgets.QMainWindow):
                         continue
 
                 if ruleDuplicateFlag == 0:
-                    listWidgetRuleOk.addItem(str(item.text()))  # 반복검사 마치고 난 뒤 왼쪽 규칙 리스트에서 선택된 아이템의 텍스트를 str형으로 받아서 오른쪽 규칙 리스트에 추가함
-                    #config2.configright(item.text())
-                    #cmt.configright(item.text())
+                    listWidgetRuleOk.addItem(
+                        str(item.text()))  # 반복검사 마치고 난 뒤 왼쪽 규칙 리스트에서 선택된 아이템의 텍스트를 str형으로 받아서 오른쪽 규칙 리스트에 추가함
+                    # config2.configright(item.text())
+                    # cmt.configright(item.text())
                     cmt.input_right_table(item.text())
                     """왼쪽 리스트의 설정은 삭제함"""
                     item = listWidgetRuleNo.takeItem(row)
@@ -303,6 +305,7 @@ class pmpLayout(QtWidgets.QMainWindow):
                     return
 
     """오른쪽 리스트에서 규칙 클릭하고 적용해제시, 규칙을 왼쪽으로 돌려놓는 부분"""
+
 
     def pushButtonApplyNo_clickedEvent(self):
 
@@ -318,19 +321,19 @@ class pmpLayout(QtWidgets.QMainWindow):
 
         else:
             listWidgetRuleNo.addItem(str(item.text()))  # 다시 왼쪽에 설정을 돌려놓음
-            #cm.configleft(item.text())
+            # cm.configleft(item.text())
             cmt.input_left_table(str(item.text()))
             item = listWidgetRuleOk.takeItem(row)
             del item  # 오른쪽 리스트의 설정은 삭제함
 
             print("해제완료")
 
-####################$@#$@#$@#$@#$
 
-    def pushButtonAdd_clickedEvent(self):  ########################변경내용: text -> title로 인자이름 변경 밑 추가##############################################################
+    def pushButtonAdd_clickedEvent(
+            self):  ########################변경내용: text -> title로 인자이름 변경 밑 추가##############################################################
 
-        row = self.ui.listWidgetRuleNo.currentRow()  #  왼쪽 규칙 리스트에서 현재 클릭된 아이템의 행(currentRow)위치를 row로 받아옴
-        title, ok = QInputDialog.getText(self, "규칙 이름 추가", "추가할 규칙의 이름을 입력하세요.")  #  메세지 입력할 수 있는 다이얼로그 띄움
+        row = self.ui.listWidgetRuleNo.currentRow()  # 왼쪽 규칙 리스트에서 현재 클릭된 아이템의 행(currentRow)위치를 row로 받아옴
+        title, ok = QInputDialog.getText(self, "규칙 이름 추가", "추가할 규칙의 이름을 입력하세요.")  # 메세지 입력할 수 있는 다이얼로그 띄움
 
         tmp = title.strip(' ')
 
@@ -363,13 +366,14 @@ class pmpLayout(QtWidgets.QMainWindow):
                         self.showNoDuplicate()  # 중복 경고메세지박스 출력 함수 호출
 
                 if ruleDuplicateFlag == 0:
-                    listWidgetRuleNo.insertItem(row, title)  # 왼쪽 규칙 리스트에서 현재 클릭된 아이템의 행 바로 위에 입력한 title을 추가함 (아이템을 클릭하지 않았다면 기본 값은 맨 위)
+                    listWidgetRuleNo.insertItem(row,
+                                                title)  # 왼쪽 규칙 리스트에서 현재 클릭된 아이템의 행 바로 위에 입력한 title을 추가함 (아이템을 클릭하지 않았다면 기본 값은 맨 위)
 
-                    #cm.configset2(title)  #############################변경사항 text -> title 로 인자이름 변경 ########################################################
+                    # cm.configset2(title)  #############################변경사항 text -> title 로 인자이름 변경 ########################################################
 
                     cmt.add_tmp(title)
 
-                    #print("되냐")
+                    # print("되냐")
                     self.second = secondWindow()
                     self.second.show()
                     print("해당 규칙은 중복되지 않습니다.")
@@ -397,12 +401,11 @@ class pmpLayout(QtWidgets.QMainWindow):
 
                         self.showNoDuplicate()  # 중복 경고메세지박스 출력 함수 호출
 
-
-
                 if ruleDuplicateFlag == 0:
-                    listWidgetRuleNo.insertItem(row, title)  # 왼쪽 규칙 리스트에서 현재 클릭된 아이템의 행 바로 위에 입력한 title을 추가함 (아이템을 클릭하지 않았다면 기본 값은 맨 위)
+                    listWidgetRuleNo.insertItem(row,
+                                                title)  # 왼쪽 규칙 리스트에서 현재 클릭된 아이템의 행 바로 위에 입력한 title을 추가함 (아이템을 클릭하지 않았다면 기본 값은 맨 위)
 
-                    #cm.configset2(title)  #############################변경사항 text -> title 로 인자이름 변경 ########################################################
+                    # cm.configset2(title)  #############################변경사항 text -> title 로 인자이름 변경 ########################################################
                     cmt.add_tmp(title)
                     print("되냐")
                     self.second = secondWindow()
@@ -442,12 +445,11 @@ class pmpLayout(QtWidgets.QMainWindow):
 
                                 self.showNoDuplicate()  # 중복 경고메세지박스 출력 함수 호출
 
-
-
                 if ruleDuplicateFlag == 0:
-                    listWidgetRuleNo.insertItem(row, title)  # 왼쪽 규칙 리스트에서 현재 클릭된 아이템의 행 바로 위에 입력한 text를 추가함 (아이템을 클릭하지 않았다면 기본 값은 맨 위)
+                    listWidgetRuleNo.insertItem(row,
+                                                title)  # 왼쪽 규칙 리스트에서 현재 클릭된 아이템의 행 바로 위에 입력한 text를 추가함 (아이템을 클릭하지 않았다면 기본 값은 맨 위)
 
-                    #cm.configset2(title)  #############################변경사항 text -> title 로 인자이름 변경 ########################################################
+                    # cm.configset2(title)  #############################변경사항 text -> title 로 인자이름 변경 ########################################################
                     cmt.add_tmp(title)
                     print("되냐")
                     self.second = secondWindow()
@@ -464,8 +466,6 @@ class pmpLayout(QtWidgets.QMainWindow):
                 plzInputRule.setIcon(QtWidgets.QMessageBox.Warning)
                 plzInputRule.setText("규칙을 제대로 입력하세요.")
                 plzInputRule.exec_()
-
-##################################
 
 
 
@@ -498,30 +498,35 @@ class pmpLayout(QtWidgets.QMainWindow):
         msgNo.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msgNo.exec_()
 
-    def pushButtonChangePassword_clickedEvent(self):  # 비번 변경             #######################변수명 변경#########################
+    def pushButtonChangePassword_clickedEvent(
+            self):  # 비번 변경             #######################변수명 변경#########################
         text, okPressed = QInputDialog.getText(self, "기존 비밀번호 입력", "Please Input Password ", QLineEdit.Password, "")
-        if okPressed and text != '':
-            newPassword = text
-            #oldPassword = cm.openconfigpasswd()
-            oldPassword = cmt.get_password()
-            if newPassword == oldPassword:  # 비번 맞는지 비교
-                print("비번 인증 성공")
-                newtext, okclicked = QInputDialog.getText(self, "새 비밀번호 입력", "Please Input New Password", QLineEdit.Password, "")
 
-                if okclicked and newtext != '':
-                    oldPassword = newPassword  # 변경한 새 비밀번호를 예전 비밀번호 변수에 대입
-                    print(oldPassword)  # 변경된 새 비밀번호 확인 테스트
+        if okPressed and text != '':
+            input_password = text
+
+            print('input_password:', type(input_password), '  ', input_password)
+            if lm.is_key_right(input_password):  # 비번 맞는지 비교
+                print("비번 인증 성공")
+                new_pwd, okclicked = QInputDialog.getText(self, "새 비밀번호 입력", "Please Input New Password",
+                                                          QLineEdit.Password, "")
+
+                if okclicked and new_pwd != '':
+                    # oldPassword = newPassword  # 변경한 새 비밀번호를 예전 비밀번호 변수에 대입
+                    # print('new pwd:',new_pwd)  # 변경된 새 비밀번호 확인 테스트
                     print("인증 완료")
-                    #cm.configpasswd2(newtext)
-                    cmt.password_change(newtext)
+                    # cm.configpasswd2(newtext)
+                    # cmt.password_change(newtext)
+                    lm.make_key(new_pwd)
                     print("변경 완료")
 
-                elif okclicked and newtext == '':
+                elif okclicked and new_pwd == '':
                     plzInputPasswd = QtWidgets.QMessageBox(self)
                     plzInputPasswd.setWindowTitle("비밀번호 입력 오류")
                     plzInputPasswd.setIcon(QtWidgets.QMessageBox.Warning)
                     plzInputPasswd.setText("비밀번호를 제대로 입력하세요.")
                     plzInputPasswd.exec_()
+
             else:
                 print("비밀번호가 틀렸습니다.")
                 wrongPasswd = QtWidgets.QMessageBox(self)
@@ -538,12 +543,13 @@ class pmpLayout(QtWidgets.QMainWindow):
             plzInputPasswd.setText("비밀번호를 제대로 입력하세요.")
             plzInputPasswd.exec_()
 
+
     def pushButtonResetReg_clickedEvent(self):  ###############변수명 변경 ################
         """
-
         레지스트리 초기화 함수
-
         """
+        reg_manager.reg_restore()
+
         """모든 버튼 비활성화"""
         # self.ui.pushButtonSearchWhole.setEnabled(False)
         # self.ui.pushButtonSearchRT.setEnabled(False)
@@ -571,4 +577,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

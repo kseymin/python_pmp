@@ -1,20 +1,34 @@
 import os
 import filtering_manager
 import format_manager
+import configparser
 
-# ======================================================
-filter_list = ['test', 'example', '자격증', '데이터', 'import']
-# ===================test example=======================
+
+def get_filter():  # 필터 가져옴
+    abspath = os.path.abspath('../config_make/config.cfg')
+    config = configparser.RawConfigParser()
+    config.read(abspath)
+    data_list = config.options('RKEYWORD')
+    filter_list = list()
+
+    for i in data_list:
+        filter_list.append(config.get('RKEYWORD', i))
+
+    return filter_list
 
 
 def file_scanning(dir_path):  # 스캔 시작경로
+    filter_list = get_filter()
     detected_list = []  # 개인정보가 포함된 파일 경로가 저장될 list
 
     for (path, dir, files) in os.walk(dir_path):  # 하위 디렉토리 검색
         for filename in files:
-            ext = os.path.splitext(filename)[-1].lower()  # ext = 파일확장자(소문자)
-            full_path = path + "/" + filename  # full_path = 현재 검색중인 디렉토리 / 파일명
-            print(full_path)  # 스캔한 파일 log 출력
+            if "~$" in filename:
+                ext = " "
+            else:
+                ext = os.path.splitext(filename)[-1].lower()  # ext = 파일확장자(소문자)
+                full_path = path + "/" + filename  # full_path = 현재 검색중인 디렉토리 / 파일명
+                print(full_path)  # 스캔한 파일 log 출력
 
             # 확장자별 파일 필터링
             if ext == '.txt':
@@ -50,6 +64,8 @@ def file_scanning(dir_path):  # 스캔 시작경로
 
             else:
                 pass
+
+    return detected_list
 
     # print("\n\n==============================Detected files==============================\n\n")
     # for i in detected_list:

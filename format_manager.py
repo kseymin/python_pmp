@@ -39,12 +39,6 @@ def image_change_format(path, lang='eng+kor'):  # path = 파일경로, lang = �
 
 
 
-
-# 한글없음
-
-
-
-#엑셀 문제있음?
 def excel_change_format(path):
 
     wb = openpyxl.load_workbook(path)

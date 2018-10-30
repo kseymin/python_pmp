@@ -7,8 +7,8 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import cofig_make.config_manager as cm
-import cofig_make.config_manager_test as cmt
+import config_make.config_manager as cm
+import config_make.config_manager_test as cmt
 
 
 class Ui_PMP(object):

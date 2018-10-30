@@ -1,4 +1,4 @@
-#!C:\Users\kitri\Desktop\pmp_project_3.7v\venv\Scripts\python.exe
+#!C:\Users\baron\PycharmProjects\PMP_1029\venv\Scripts\python.exe
 # EASY-INSTALL-ENTRY-SCRIPT: 'pytesseract==0.2.5','console_scripts','pytesseract'
 __requires__ = 'pytesseract==0.2.5'
 import re
