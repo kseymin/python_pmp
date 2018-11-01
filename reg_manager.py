@@ -19,7 +19,7 @@ def get_office_reg(name, reg_backup_list):  # name = 'command'
             registry_key = winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, REG_PATH, 0, winreg.KEY_READ)
             value, regtype = winreg.QueryValueEx(registry_key, name)
             winreg.CloseKey(registry_key)
-            reg_backup_list.append(value)
+            reg_backup_list.extend(value)
         except WindowsError:
             print("error")
             pass

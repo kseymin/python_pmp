@@ -55,6 +55,8 @@ def file_filtering(filter_list, path):
 
 def get_filter():  # 필터 가져옴
     abspath = os.path.abspath('../config_make/config.cfg')
+    #for test
+    #abspath = os.path.abspath('./config_make/config.cfg')
     config = configparser.RawConfigParser()
     config.read(abspath)
     data_list = config.options('RKEYWORD')
@@ -99,5 +101,5 @@ def clipboard_copy_monitor():
                 win32clipboard.CloseClipboard()
                 #print("No data")
 
-        time.sleep(1)
+        #time.sleep(1)
         # loop delay(~/sec)

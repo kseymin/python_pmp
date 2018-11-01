@@ -6,9 +6,6 @@ return
 원하는 프로세스 의 path값 return
 '''
 import re
-import wmi
-import pythoncom
-
 
 
 '''
@@ -18,43 +15,28 @@ CommandLine으로 나오는 값이
 
 해당 형식을 나누기위한 함수
 '''
-def set_filter(split_string ):
+def set_filter(split_string):
     f = re.compile('[A-Z]:')
-    #s = '"C:\\Windows\\system32\\NOTEPAD.EXE" C:\\Users\\kitri\\Desktop\\설치목록.txt'
     s= split_string
     s = re.sub('[", ' ']', '', s)
 
     output_list= list()
-    # print (s)
+
     indexList = []
     for i in f.finditer(s):
         indexList.append(i.span()[0])
     indexList.append(len(s))
-    #print (indexList)
 
     for i in range(0, len(indexList)-1):
-        #s[indexList[i]:indexList[i+1]]
         output_list.append(s[indexList[i]:indexList[i+1]])
-    #print('test filter index:',output_list)
+
     return output_list
 
 
-# def  get_proc_pid_list(process_name):
-#     p = wmi.WMI()
-#     process_name += '.exe'
-#     #process_name.lower()
-#
-#     pid_list = list()
-#     for process in p.Win32_Process(name = process_name):
-#         pid_list.append(process.ProcessId)
-#
-#     return pid_list
-
-def is_running(process_name):
-    pythoncom.CoInitialize()
 
 
-    p = wmi.WMI()
+def is_running(process_name,wmip):
+    p = wmip
     process_name += '.exe'
     process_name.lower()
 
@@ -66,30 +48,33 @@ def is_running(process_name):
     return flag
 
 #
-def pid_to_path(pname, pid):
-    pythoncom.CoInitialize()
-
-    p = wmi.WMI()
+def pid_to_path(pname, pid,wmip):
+    p = wmip
     pname += '.exe'
     pname.lower()
 
     result_pid= str()
-    for process in p.Win32_Process(name = pname):
+
+    win32pid_list = [pid for pid in p.Win32_Process(name = pname)]
+
+    for process in win32pid_list:
         if process == pid:
             result_pid = process.CommandLine
 
     return result_pid
 
 
-def path_to_pid_input_string(pname,input_string):
-    pythoncom.CoInitialize()
+def path_to_pid_input_string(pname,input_string,wmip):
+
     #tmp_str = str()
     output_pid = str()
     filter = pname + '.exe'
 
-    p = wmi.WMI()
+    p = wmip
 
-    for process in p.Win32_Process(name = filter):
+    win32pid_list = [pid for pid in p.Win32_Process(name=filter)]
+
+    for process in  win32pid_list:
         if process.CommandLine is not None:
             tmp_list = set_filter(process.CommandLine)
             if tmp_list[1] == input_string:
@@ -115,16 +100,16 @@ def path_print(path_list):
 
 
 #  실제 연 파일 path 한번에 리턴
-def get_path(filter):
-    pythoncom.CoInitialize()
-
-    p = wmi.WMI()
+def get_path(filter,wmip):
+    p = wmip
     filter = filter + '.exe'
 
     output_tmp = str()
     filtered_output = list()
 
-    for process in p.Win32_Process ():
+    win32pid_list = [pid for pid in p.Win32_Process()]
+
+    for process in win32pid_list :
       if process.CommandLine is not None:
           output_tmp += '\n'+process.CommandLine
 
@@ -140,94 +125,66 @@ def get_path(filter):
 
 
 #  실제 연 특정 파일 path 한번에 리턴
-def get_specific_path(pname,pid):
-    pythoncom.CoInitialize()
-
-    p = wmi.WMI ()
+def get_specific_path(pname,pid,wmip):
+    p = wmip
     filter =pname + '.exe'
 
-    output_tmp = str()
+    #output_tmp = str()
+    need_filter_list = list()
+
     filtered_output = list()
 
-    for process in p.Win32_Process ():
-      if process.CommandLine is not None:
-          if process.ProcessId == pid:
-              output_tmp += '\n'+process.CommandLine
+    win32pid_list = [pid for pid in p.Win32_Process()]
 
-    need_filter_list = output_tmp.splitlines()
+    for process in win32pid_list:
+        pc = process.CommandLine
+        proc_id = process.ProcessId
+        if pc is not None:
+            if proc_id == pid:
+                #output_tmp += '\n' + pc
+                need_filter_list.append(pc)
+
+    #need_filter_list = output_tmp.splitlines()
     matching = [s for s in need_filter_list if filter.lower() in s.lower()]
 
     for lines in matching:
         filtered_output.append(set_filter(lines))
+        #filtered_output.append(set_filter(lines))
 
     return filtered_output
 
 
-def get_proc_pid_list(process_name):
-    pythoncom.CoInitialize()
+def get_proc_pid_list(process_name,wmip):
 
     output_pid = list()
+    p = wmip
 
     if process_name is 'AcroRd32':
         #find_string = 'AcroRd32.exe" --type=renderer  /n'
         find_string = '--type=renderer'
-        p = wmi.WMI()
 
-        for process in p.Win32_Process(name = 'AcroRd32.exe'):
-            if process.CommandLine is not None:
-                if find_string not in process.CommandLine:
-                    output_pid.append(process.ProcessId)
+
+        win32pid_list = [pid for pid in p.Win32_Process(name = 'AcroRd32.exe')]
+
+        for process in win32pid_list:
+            pc = process.CommandLine
+            proc_id = process.ProcessId
+            if pc is not None:
+                if find_string not in pc:
+                    output_pid.append(proc_id)
     else:
-        p = wmi.WMI()
+
         process_name += '.exe'
         #process_name.lower()
+        win32pid_list = [pid for pid in p.Win32_Process(name = process_name)]
 
-        for process in p.Win32_Process(name = process_name):
+        for process in win32pid_list:
             output_pid.append(process.ProcessId)
 
 
     return  output_pid
 
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
     #test code
-    #
-    # filtering_process = 'notepad'
-    # path_list = get_path(filtering_process)
-    #
-    # if len(path_list) is not 1:
-    #
-    #     print('this is path_list :   ',path_list)
-    #
-    #     for inum in range(0,len(path_list)):
-    #         print(filtering_process+' :{}  path:  {}'.format(inum,path_list[inum][1]))
-    #
-    # else:
-    #     print(filtering_process+' 실제 파일 경로 {}'.format(path_list[0][1]))
-
-    #path_to_pid_inputpath('notepad',)
-    #
-    # x= get_proc_pid_list('notepad')
-    # print(x)
-    #
-
-    # "C:\Program Files (x86)\Adobe\Acrobat Reader DC\Reader\AcroRd32.exe" / n
-    # "C:\Users\baron\Desktop\TestDir2\test.pdf"
-    #
-    # str2 = 'C:/Program Files (x86)/Adobe/Acrobat Reader DC/Reader/AcroRd32.exe - -type = renderer / prefetch:1 / n C:/Users/baron/Desktop/TestDir2/test.pdf'
-    # str = 'C:\\ProgramFiles(x86)\\Adobe\\AcrobatReaderDC\\Reader\\AcroRd32.exe--type=renderer/prefetch:1/n'
-    # printx =set_filter(str2)
-    # print(printx)
-    #
-    # "C:\Program Files (x86)\Adobe\Acrobat Reader DC\Reader\AcroRd32.exe" / n
-    # "C:\Users\baron\Desktop\TestDir2\test.pdf"
-    # "C:\Program Files (x86)\Adobe\Acrobat Reader DC\Reader\AcroRd32.exe" - -type = renderer / prefetch:1 / n
-    # "C:\Users\baron\Desktop\TestDir2\test.pdf"
-
-    find_string = '- -type = renderer / prefetch:1 / n'
-
-    p = wmi.WMI()
-
-    for process in p.Win32_Process(name='AcroRd32.exe'):
-        if process.CommandLine is not None:
-            print(process.CommandLine)
+    #get_path('AcroRd32')

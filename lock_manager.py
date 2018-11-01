@@ -14,9 +14,6 @@ abspath = os.path.abspath('../config_make/config.cfg')
 isabspath = abspath
 
 
-
-
-
 def make_key(password):
     pwd = password
 
@@ -86,45 +83,17 @@ def is_key_right(password):
 
 
 
-#def delete_key():
-
-
+# test code
+# if __name__ == '__main__':
 #
+#     # make_key('hello')
+#     # print(exist_pwd())
 #
+#     #is_key_right('hello')
+#     #make_key('hello')
+#     # t=is_key_right('hello2')
+#     # print(t)
 #
-# def change_key(older_password):
+#     #make_key('hello')
 #
-#     pwd = older_password
-#
-#     #원래 패스워드가 맞는지 일단확인
-#     if is_key_right(pwd):
-#         delete_key()
-#         make_key()
-#     else:
-#         print('This older key is not Right')
-#
-#
-#
-# ## key  잃어버렸을 때 어떻게?
-#
-# def make_key_description():
-#
-# def find_key():
-
-
-
-
-
-if __name__ == '__main__':
-
-    # make_key('hello')
-    # print(exist_pwd())
-
-    #is_key_right('hello')
-    #make_key('hello')
-    # t=is_key_right('hello2')
-    # print(t)
-
-    #make_key('hello')
-
-    make_key("hello")
+#     make_key("hello")

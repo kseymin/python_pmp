@@ -1,16 +1,13 @@
 import sys
-#from mainLayout6 import *
-#from firstSettingRun import *
 
-import gui.mainLayout as guiMain
-import gui.firstSettingRun as firstSetting
-
+#import gui.mainLayout as guiMain
+from gui import mainLayout as guiMain
 
 from PyQt5.QtWidgets import QLineEdit
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QDialog, QInputDialog
 from PyQt5 import QtTest
-import config_make.config_manager as cm
+#import config_make.config_manager as cm
 
 import config_make.config_manager_test as cmt
 import lock_manager as lm
@@ -19,13 +16,14 @@ import lock_manager as lm
 import main_operator as mo
 import copy_defender as cd
 from multiprocessing import Process
+#testing
+from concurrent import futures
 
 # Whole System Search
 import file_scan
 
 # Registry Reset
 import reg_manager
-
 
 process_list = []
 
@@ -175,27 +173,28 @@ class pmpLayout(QtWidgets.QMainWindow):
         self.ui.pushButtonSearchWhole.setEnabled(False)  # 검색버튼 비활성화
         self.ui.pushButtonSearchRT.setEnabled(False)
 
-        #
-        # i = 0
-        # while i < 100:
-        #     self.ui.textBrowserSearch.append('리얼타임검색합니다. %d' % i)
-        #     i = i + 1
-        #     QtTest.QTest.qWait(100)  # 딜레이 속도 설정
-        #
-        #     if self.stop is True:
-        #         break
 
-        pname_list = ['notepad', 'winword', 'POWERPNT', 'excel', 'AcroRd32']
+        pname_list = ['notepad', 'winword', 'POWERPNT', 'excel','AcroRd32']
 
-        #process_list = []
+        # with futures.ThreadPoolExecutor(max_workers=6) as executor:
+        #     executor.submit(cd.clear_clipboard, )
+        #     executor.map(mo.run, pname_list)
+
+        # with futures.ProcessPoolExecutor(max_workers=6) as executor:
+        #     executor.map(cd.clipboard_copy_monitor())
+        #     executor.map(mo.run, pname_list)
+        #
 
 
         process = Process(target=cd.clipboard_copy_monitor, name='copyDefender')
+        process.daemon = True
         process_list.append(process)
         process.start()
 
         for pname in pname_list:
+
             process = Process(target=mo.run, args=(pname,), name=pname)
+            process.daemon = True
             process_list.append(process)
             process.start()
 

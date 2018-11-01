@@ -7,6 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+#import PyQt5
 import config_make.config_manager as cm
 import config_make.config_manager_test as cmt
 
