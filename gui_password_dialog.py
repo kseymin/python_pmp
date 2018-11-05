@@ -30,6 +30,7 @@ def run():
     global password
 
     app = Tk()
+    app.title('Password')
     center_window()
     password = StringVar() #Password variable
     passEntry = Entry(app, textvariable=password, show='*').pack()
