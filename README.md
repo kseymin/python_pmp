@@ -118,7 +118,7 @@
 <개인정보를 다룰시 프로세스를 종료한 모습>
 
 
-![개인정보검출](https://github.com/kseymin/python_pmp/blob/master/README_Resources/realTime01.png "개인정보검출")
+![개인정보검출](https://github.com/kseymin/python_pmp/blob/master/README_Resources/realTime02.png "개인정보검출")
 
 
 
@@ -144,18 +144,22 @@
  총 4명의 팀원 으로 이루어 져서 개발
  -> 제가 맡은 부분은 실시간 탐지 기능 부분 ,프로그램 최적화 부분
 
+추가적으로 
+더자세한 정보는 
+README_Resources/APT보안전문가과정_보안노라_20181104_v1.1.docx
+파일을 참고해주세요.
 
 -----
 
  ### 참고 문헌
 
-> - 사이트
- https://support.office.com/ : MS Office Product Support
- https://docs.microsoft.com/ : Microsoft Windows Developer Center
- http://pyqt.sourceforge.net/Docs/PyQt5/ : PyQt5 Reference Guide
- https://github.com/tesseract-ocr/tesseract: Tesseract-OCR GitHub
+>사이트
+ - https://support.office.com/ : MS Office Product Support
+ - https://docs.microsoft.com/ : Microsoft Windows Developer Center
+ - http://pyqt.sourceforge.net/Docs/PyQt5/ : PyQt5 Reference Guide
+ - https://github.com/tesseract-ocr/tesseract: Tesseract-OCR GitHub
 
 
->- 서적
- 점프 투 파이썬 - 박응용 저, 이지스 퍼블리싱
- 리버싱 핵심원리 – 이승원 저, 인사이트
+>서적
+ - 점프 투 파이썬 - 박응용 저, 이지스 퍼블리싱
+ - 리버싱 핵심원리 – 이승원 저, 인사이트
